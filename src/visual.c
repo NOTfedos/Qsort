@@ -1,11 +1,15 @@
 #include "myqsort.h"
-#include "stdio.h"
-#include "stdlib.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include "stdbool.h"
 #include "string.h"
+#include "time.h"
 
 
 void output_array(double *arr, int n);
+
+
+double * generate_random_array(int *n);
 
 
 void write_array_to_file(const char *outputFileName, double *array, int n);
@@ -16,7 +20,7 @@ double * read_array_from_file(const char *inputFileName, int *n);
 
 int main(int argc, char **argv){
 
-	bool isRead = 0, isWrite = 0;
+	bool isRead = 0, isWrite = 0, toGenerate = 0;
 	char *inputFileName, *outputFileName;
 
 
@@ -38,11 +42,29 @@ int main(int argc, char **argv){
 			}
 		}
 
+		if (!strcmp(argv[i], "-generate") && !toGenerate){
+			toGenerate = 1;
+		}
+
 	}
 
 
 	// данные нашего исходного массива(нуждающегося в сортировке)
 	int n; double *array;
+
+
+	// если указан флаг на генерацию входных данных
+	if(toGenerate){
+		
+		inputFileName = "../datafiles/input.txt";
+		outputFileName = "../datafiles/output.txt";
+		isRead = 1;
+		isWrite = 1;
+
+		array = generate_random_array(&n);
+
+		write_array_to_file(inputFileName, array, n);
+	}
 
 
 	// пытаемся прочитать массив из файла
@@ -90,6 +112,21 @@ void output_array(double *arr, int n){
 	}
 	printf("\n");
 	printf("-------------------------------------\n");
+}
+
+
+double * generate_random_array(int *n){
+	srand(time(NULL));
+
+	*n = rand();
+
+	double * arr = (double *) malloc((*n) * sizeof(double));
+
+	for(int i = 0; i < (*n); i++){
+		arr[i] = (double) rand();
+	}
+
+	return arr;
 }
 
 
