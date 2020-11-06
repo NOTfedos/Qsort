@@ -50,7 +50,7 @@ int main(int argc, char **argv){
 		array = read_array_from_file(inputFileName, &n);
 		if (array == NULL){
 			free(array);
-			printf("Some error while reading array from file\n");
+			printf("\t\tSome error while reading array from file\n");
 			return 0;
 		}
 		output_array(array, n);
@@ -114,7 +114,7 @@ void write_array_to_file(const char *outputFileName, double *array, int n){
 	
 
 	fclose(outputFile);
-	printf("Success\n");
+	printf("\tSuccess\n");
 
 }
 
@@ -132,13 +132,13 @@ double * read_array_from_file(const char *inputFileName, int *n){
 	// открываем файл
 	datafile = fopen(inputFileName, "r"); 
 	if (datafile == NULL){ // если файл не существует
-		printf("Can not open file %s\n", inputFileName);
+		printf("\tCan not open file %s\n", inputFileName);
 		fclose(datafile);
 		return NULL;
 	}
 
 
-	printf("Success\n");
+	printf("\tSuccess\n");
 
 
 	// сбрасываем буфер для файла
