@@ -53,7 +53,6 @@ int main(int argc, char **argv){
 			printf("\t\tSome error while reading array from file\n");
 			return 0;
 		}
-		output_array(array, n);
 	}else{ 
 		printf("No input files\n");
 		free(array);
@@ -68,7 +67,7 @@ int main(int argc, char **argv){
 	// вывод в файл отсортированного массива
 	if(isWrite){
 		write_array_to_file(outputFileName, array, n);
-		printf("\nSorted Array written into %s\n", outputFileName);
+		printf("\nSorted Array written into: %s\n", outputFileName);
 	}else{
 		printf("\nSorted Array is NOT written\n");
 	}
@@ -101,7 +100,7 @@ void write_array_to_file(const char *outputFileName, double *array, int n){
 	FILE *outputFile = fopen(outputFileName, "w");
 
 
-	printf("\nTrying to write into file %s\n", outputFileName);
+	printf("\nTrying to write into file: %s\n", outputFileName);
 
 	fflush(outputFile);
 	fprintf(outputFile, "%d ", n);
@@ -126,7 +125,7 @@ double * read_array_from_file(const char *inputFileName, int *n){
 	FILE *datafile;
 
 
-	printf("\nTrying to read file %s\n", inputFileName);
+	printf("\nTrying to read file: %s\n", inputFileName);
 
 
 	// открываем файл
