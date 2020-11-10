@@ -22,7 +22,12 @@ int partition(double *arr, int start, int end){
 
 
 void myqsort(double *arr, int start, int end){
-	// функция qsort
+	/*
+		Функция быстрой сортировки массива arr с диапазоном 
+		от элемента arr[start] до элемента arr[end].
+		Чтобы отсортировать массив полностью, нужно вызвать 
+		myqsort(your_array, 0, n-1)  <-  your_array будет отсортирован  
+	*/
 	
 	if (start >= end){
 		return;
