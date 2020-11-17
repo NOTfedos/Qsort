@@ -1,21 +1,18 @@
 #include "myqsort.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "stdbool.h"
 #include "string.h"
-#include "time.h"
 
 
-void output_array(double *arr, int n);
+void output_array(char **arr, int array_size);
 
 
-double * generate_random_array(int *n);
+void write_array_to_file(const char *outputFileName, char **array, int array_size, int word_size);
 
 
-void write_array_to_file(const char *outputFileName, double *array, int n);
-
-
-double * read_array_from_file(const char *inputFileName, int *n);
+char ** read_array_from_file(const char *inputFileName, int *array_size, int *word_size);
 
 
 int main(int argc, char **argv){
@@ -50,7 +47,7 @@ int main(int argc, char **argv){
 
 
 	// данные нашего исходного массива(нуждающегося в сортировке)
-	int n; double *array;
+	int array_size, word_size; char **array;
 
 
 	// если указан флаг на генерацию входных данных
@@ -61,15 +58,17 @@ int main(int argc, char **argv){
 		isRead = 1;
 		isWrite = 1;
 
-		array = generate_random_array(&n);
+		// сгенерируем массив
+		array = get_random_array(&array_size, &word_size);
 
-		write_array_to_file(inputFileName, array, n);
+		// записываем сгенерированный массив в input файл
+		write_array_to_file(inputFileName, array, array_size, word_size);
 	}
 
 
 	// пытаемся прочитать массив из файла
 	if (isRead){
-		array = read_array_from_file(inputFileName, &n);
+		array = read_array_from_file(inputFileName, &array_size, &word_size);
 		if (array == NULL){
 			free(array);
 			printf("\t\tSome error while reading array from file\n");
@@ -83,12 +82,12 @@ int main(int argc, char **argv){
 
 
 	// сортируем массив
-	myqsort(array, 0, n-1);
+	myqsort(array, 0, array_size-1);
 
 
 	// вывод в файл отсортированного массива
 	if(isWrite){
-		write_array_to_file(outputFileName, array, n);
+		write_array_to_file(outputFileName, array, array_size, word_size);
 		printf("\nSorted Array written into: %s\n", outputFileName);
 	}else{
 		printf("\nSorted Array is NOT written\n");
@@ -96,41 +95,29 @@ int main(int argc, char **argv){
 
 
 	//освобождаем память
-	free(array); 
+	for(int i=0; i < array_size; i++){
+	    free(array[i]);
+	}
+	free(array);
 
 
 	return 0;
 }
 
 
-void output_array(double *arr, int n){
+void output_array(char **arr, int array_size){
 	// вывод одномерного массива(DEBUG ONLY)
 	printf("-------------------------------------\n");
 	printf("%s\n", "ARRAY IS:");
-	for(int i=0; i<n; i++){
-		printf("%lf | ", arr[i]);
+	for(int i=0; i<array_size; i++){
+		printf("%s | ", arr[i]);
 	}
 	printf("\n");
 	printf("-------------------------------------\n");
 }
 
 
-double * generate_random_array(int *n){
-	srand(time(NULL));
-
-	*n = rand();
-
-	double * arr = (double *) malloc((*n) * sizeof(double));
-
-	for(int i = 0; i < (*n); i++){
-		arr[i] = (double) rand();
-	}
-
-	return arr;
-}
-
-
-void write_array_to_file(const char *outputFileName, double *array, int n){
+void write_array_to_file(const char *outputFileName, char **array, int array_size, int word_size){
 	// выводим массив(отсортированный) в файл
 
 
@@ -140,12 +127,19 @@ void write_array_to_file(const char *outputFileName, double *array, int n){
 	printf("\nTrying to write into file: %s\n", outputFileName);
 
 	fflush(outputFile);
-	fprintf(outputFile, "%d ", n);
+
+	fprintf(outputFile, "%d ", array_size);
+	fprintf(outputFile, "%d ", word_size);
 
 
-	for(int i = 0; i < n; i++){
-		fprintf(outputFile, "%lf ", array[i]);
+	for(int i = 0; i < array_size; i++){
+
+	    for(int j = 0; j < word_size; j++){
+	        fprintf(outputFile, "%c", array[i][j]);
+	    }
+	    fprintf(outputFile, "%s ", "");
 	}
+
 	fprintf(outputFile, "%s\n", "");
 	
 
@@ -155,7 +149,7 @@ void write_array_to_file(const char *outputFileName, double *array, int n){
 }
 
 
-double * read_array_from_file(const char *inputFileName, int *n){
+char ** read_array_from_file(const char *inputFileName, int *array_size, int *word_size){
 	// считываем одномерный массив из файла
 	
 
@@ -174,27 +168,27 @@ double * read_array_from_file(const char *inputFileName, int *n){
 	}
 
 
-	printf("\tSuccess\n");
-
-
 	// сбрасываем буфер для файла
 	fflush(datafile);
-	// считываем кол-во элементов массива
-	fscanf(datafile, "%d ", n);
 
+	// считываем кол-во элементов массива
+	fscanf(datafile, "%d ", array_size);
+	fscanf(datafile, "%d ", word_size);
 
 	// выделяем память под массив
-	double *array = (double *) malloc((*n) * sizeof(double));
-	for(int i=0; i < (*n); i++){
-		fscanf(datafile, "%lf ", &array[i]);
+	char **array = (char **) malloc((*array_size) * sizeof(char *));
+	for(int i=0; i < (*array_size); i++){
+		array[i] = (char *) malloc((*word_size) * sizeof(char));
+		fscanf(datafile, "%s", array[i]);
 	}
 
 
 	fclose(datafile);
 
+    printf("\tSuccess\n");
 
 	// DEBUG output array
-	// output_array(array, *n);
+	// output_array(array, *array_size);
 
 
 	return array;
